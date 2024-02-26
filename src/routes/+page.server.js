@@ -1,36 +1,38 @@
 import { API_ENDPOINT } from '$env/static/private';
-import { generateRandomCode } from '../lib/js/random'
+import { generateRandomCode } from '../lib/js/random';
 
 export const actions = {
     default: async ({ request }) => {
         const data = await request.formData();
 
-        const formData = new FormData();
+        const fotoFiles = data.getAll('foto')
 
-        formData.append('tanggal', data.get('tanggal'));
-        formData.append('jenis', data.get('jenis'));
-        if (data.get('perusahaan') === null) {
-            formData.append('perusahaan', 'PLN NP');
-        } else {
-            formData.append('perusahaan', data.get('perusahaan'));
-        }
-        // const fotoFiles = data.getAll('foto');
-        // fotoFiles.forEach((file) => {
-        //     formData.append('foto', file);
-        // });
-        formData.append('pekerjaan', data.get('pekerjaan'));
-        formData.append('kode', generateRandomCode())
+        const fotoArray = []
+        fotoFiles.forEach(file => {
+            fotoArray.push(file)
+        })
 
-        console.log(formData)
+        const jsonData = {
+            tanggal: data.get('tanggal'),
+            jenis: data.get('jenis'),
+            perusahaan: data.get('perusahaan') === null ? 'PLN NP' : data.get('perusahaan'),
+            pekerjaan: data.get('pekerjaan'),
+            kode: generateRandomCode(),
+            foto: fotoArray
+        };
 
         const res = await fetch(`${API_ENDPOINT}/api/activity`, {
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json' // Tentukan tipe konten sebagai JSON
+            },
+            body: JSON.stringify(jsonData) // Ubah objek data menjadi string JSON
         });
 
         return res.json();
     }
 };
+
 
 // export const load = async () => {
 //     const res = await fetch(`${API_ENDPOINT}/check-data`);
