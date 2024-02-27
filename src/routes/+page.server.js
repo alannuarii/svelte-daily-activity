@@ -5,28 +5,24 @@ export const actions = {
     default: async ({ request }) => {
         const data = await request.formData();
 
-        const fotoFiles = data.getAll('foto')
-
-        const fotoArray = []
-        fotoFiles.forEach(file => {
-            fotoArray.push(file)
-        })
-
-        const jsonData = {
-            tanggal: data.get('tanggal'),
-            jenis: data.get('jenis'),
-            perusahaan: data.get('perusahaan') === null ? 'PLN NP' : data.get('perusahaan'),
-            pekerjaan: data.get('pekerjaan'),
-            kode: generateRandomCode(),
-            foto: fotoArray
-        };
+        const formData = new FormData();
+        formData.append('jenis', data.get('jenis'));
+        formData.append('tanggal', data.get('tanggal'));
+        formData.append('pekerjaan', data.get('pekerjaan'));
+        formData.append('kode', generateRandomCode())
+        if (data.get('perusahaan') === null) {
+            formData.append('perusahaan', 'PLN NP');
+        } else {
+            formData.append('perusahaan', data.get('perusahaan'));
+        }
+        const fotoFiles = data.getAll('foto');
+        fotoFiles.forEach((file) => {
+            formData.append('foto', file);
+        });
 
         const res = await fetch(`${API_ENDPOINT}/api/activity`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json' // Tentukan tipe konten sebagai JSON
-            },
-            body: JSON.stringify(jsonData) // Ubah objek data menjadi string JSON
+            body: formData
         });
 
         return res.json();
