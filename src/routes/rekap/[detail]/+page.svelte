@@ -3,8 +3,10 @@
 
   export let data;
 
-  const activity = data.data.data.length > 0 ? data.data.data : [];
+  const activity = data.data.length > 0 ? data.data : [];
   const endpoint = data.endpoint;
+
+  console.log(activity);
 
   let isFileSelected = false;
 

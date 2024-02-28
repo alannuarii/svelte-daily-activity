@@ -5,9 +5,19 @@ import { redirect } from '@sveltejs/kit';
 export const load = async (params) => {
     const kode = params.params.detail
 
-    const res = await fetch(`${API_ENDPOINT}/get-activity-param/${kode}`);
-    const data = await res.json();
+    const [res1, res2] = await Promise.all([
+        fetch(`${API_ENDPOINT}/api/activity1/${kode}`).then((res) => res.json()),
+        fetch(`${API_ENDPOINT}/api/activity2/${kode}`).then((res) => res.json())])
 
+    let data
+
+    if (res1.data.length > 0) {
+        data = res1.data
+    } else {
+        data = res2.data
+    }
+
+    console.log(data)
     return {
         data: data,
         endpoint: PUBLIC_API_ENDPOINT
@@ -37,7 +47,7 @@ export const actions = {
             formData.append('foto', file);
         });
 
-        const res = await fetch(`${API_ENDPOINT}/input-photos/${params.detail}`, {
+        const res = await fetch(`${API_ENDPOINT}/api/photos/${params.detail}`, {
             method: 'POST',
             body: formData
         });
