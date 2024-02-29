@@ -17,7 +17,6 @@ export const load = async (params) => {
         data = res2.data
     }
 
-    console.log(data)
     return {
         data: data,
         endpoint: PUBLIC_API_ENDPOINT
@@ -27,15 +26,17 @@ export const load = async (params) => {
 export const actions = {
     default: async ({ request, params }) => {
 
+        const kode = params.detail
+
         const data = await request.formData();
 
         const formData = new FormData();
         formData.append('tanggal', data.get('tanggal'));
         formData.append('pekerjaan', data.get('pekerjaan'));
-        formData.append('kode', data.get('kode'));
+        formData.append('kode', kode);
 
         if (data.get('kode')) {
-            await fetch(`${API_ENDPOINT}/delete-data/${data.get('kode')}`, {
+            await fetch(`${API_ENDPOINT}/delete-data/${kode}`, {
                 method: 'DELETE'
             });
 
@@ -47,7 +48,7 @@ export const actions = {
             formData.append('foto', file);
         });
 
-        const res = await fetch(`${API_ENDPOINT}/api/photos/${params.detail}`, {
+        const res = await fetch(`${API_ENDPOINT}/api/photos/${kode}`, {
             method: 'POST',
             body: formData
         });

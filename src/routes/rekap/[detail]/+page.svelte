@@ -6,8 +6,6 @@
   const activity = data.data.length > 0 ? data.data : [];
   const endpoint = data.endpoint;
 
-  console.log(activity);
-
   let isFileSelected = false;
 
   const handleSubmit = (event) => {
